@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AtomicStore - Home</title>
+  <style>
+    /* Reset básico */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #6b8dd6, #a1c4fd);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      color: #333;
+    }
+
+    header {
+      background-color: #fff;
+      box-shadow: 0 2px 6px rgb(0 0 0 / 0.1);
+      padding: 15px 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    header h1 {
+      color: #007bff;
+      font-weight: 700;
+      font-size: 1.8rem;
+      letter-spacing: 2px;
+    }
+
+    nav a {
+      color: #007bff;
+      text-decoration: none;
+      font-weight: 600;
+      margin-left: 25px;
+      font-size: 1rem;
+      transition: color 0.3s ease;
+    }
+
+    nav a:hover {
+      color: #004a99;
+    }
+
+    main {
+      flex: 1;
+      max-width: 900px;
+      margin: 50px auto;
+      background: rgba(255,255,255,0.95);
+      border-radius: 12px;
+      padding: 40px 30px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    main h2 {
+      font-size: 2.2rem;
+      margin-bottom: 15px;
+      color: #0056b3;
+      font-weight: 700;
+    }
+
+    main p {
+      font-size: 1.1rem;
+      color: #444;
+      margin-bottom: 30px;
+      line-height: 1.5;
+    }
+
+    .centralizado {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 25px;
+    }
+
+    main img {
+      width: 220px;
+      max-width: 80%;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0, 123, 255, 0.3);
+      transition: transform 0.3s ease;
+    }
+
+    main img:hover {
+      transform: scale(1.05);
+    }
+
+    .button {
+      background-color: #007bff;
+      color: #fff;
+      padding: 14px 30px;
+      font-size: 1.2rem;
+      font-weight: 700;
+      border-radius: 8px;
+      cursor: pointer;
+      text-decoration: none;
+      box-shadow: 0 5px 12px rgba(0, 123, 255, 0.4);
+      transition: background-color 0.3s ease, box-shadow 0.3s ease;
+      display: inline-block;
+    }
+
+    .button:hover {
+      background-color: #0056b3;
+      box-shadow: 0 7px 20px rgba(0, 86, 179, 0.7);
+    }
+
+    /* Responsivo */
+    @media (max-width: 600px) {
+      main {
+        margin: 30px 15px;
+        padding: 25px 20px;
+      }
+
+      main h2 {
+        font-size: 1.8rem;
+      }
+
+      .button {
+        width: 100%;
+        font-size: 1rem;
+        padding: 12px 0;
+      }
+
+      nav a {
+        margin-left: 15px;
+        font-size: 0.9rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>AtomicStore</h1>
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="produtos.html">Produtos</a>
+    <a href="sobre.html">Sobre Nós</a>
+    <a href="contato.html">Contato</a>
+  </nav>
+</header>
+
+<main>
+  <h2>Bem-vindo à AtomicStore!</h2>
+  <p>Os melhores tênis com estilo, conforto e preço acessível. Confira nossa linha completa de produtos e aproveite as ofertas exclusivas!</p>
+
+  <div class="centralizado">
+    <img src="imagens/logo.png" alt="Logo AtomicStore" />
+    <a href="produtos.html" class="button" aria-label="Ver Ofertas na AtomicStore">Ver Ofertas</a>
+  </div>
+</main>
+
+</body>
+</html>

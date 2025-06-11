@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AtomicStore - Produtos</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+      background-color: #f2f2f2;
+    }
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 20px;
+      background: #fff;
+      border-bottom: 1px solid #ccc;
+    }
+    header h1 {
+      color: #007bff;
+    }
+    nav a {
+      margin-left: 20px;
+      text-decoration: none;
+      color: #007bff;
+      font-weight: bold;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 20px auto;
+      padding: 20px;
+    }
+    .produtos {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+    .produto {
+      background: #fff;
+      padding: 15px;
+      border-radius: 8px;
+      box-shadow: 0 0 5px rgba(0,0,0,0.1);
+      text-align: center;
+      position: relative;
+      height: 380px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .produto img {
+      width: 100%;
+      height: 180px;
+      object-fit: contain;
+      border-radius: 8px;
+      margin-bottom: 10px;
+    }
+    .produto h3 {
+      font-size: 18px;
+      color: #333;
+      margin: 0 0 5px;
+      flex-grow: 1;
+    }
+    .produto p {
+      color: #007bff;
+      font-weight: bold;
+      margin: 0 0 10px;
+    }
+    .botoes-produto {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+    }
+    .botoes-produto button {
+      flex: 1;
+      border: none;
+      border-radius: 6px;
+      padding: 10px 0;
+      font-size: 14px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+      color: white;
+    }
+    .btn-comprar {
+      background-color: #28a745;
+    }
+    .btn-comprar:hover {
+      background-color: #1e7e34;
+    }
+    .btn-adicionar {
+      background-color: #007bff;
+    }
+    .btn-adicionar:hover {
+      background-color: #0056b3;
+    }
+    #botaoCarrinho {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: #007bff;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 60px;
+      height: 60px;
+      font-size: 30px;
+      cursor: pointer;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+    #contadorCarrinho {
+      position: absolute;
+      top: -6px;
+      right: -6px;
+      background: red;
+      color: white;
+      border-radius: 50%;
+      padding: 3px 7px;
+      font-size: 12px;
+      font-weight: bold;
+      display: none;
+    }
+    #painelCarrinho {
+      position: fixed;
+      bottom: 90px;
+      right: 20px;
+      width: 320px;
+      max-height: 400px;
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      padding: 15px;
+      overflow-y: auto;
+      display: none;
+      z-index: 1000;
+    }
+    #painelCarrinho h3 {
+      margin-top: 0;
+      margin-bottom: 10px;
+      font-size: 22px;
+      text-align: center;
+    }
+    .itemCarrinho {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+      border-bottom: 1px solid #eee;
+      padding-bottom: 5px;
+    }
+    .itemCarrinho span {
+      flex: 1;
+      font-size: 16px;
+      color: #333;
+    }
+    .itemCarrinho div {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+    }
+    .itemCarrinho button {
+      background: transparent;
+      border: none;
+      color: #007bff;
+      font-size: 20px;
+      cursor: pointer;
+      padding: 0 5px;
+      line-height: 1;
+      transition: color 0.3s;
+      user-select: none;
+    }
+    .itemCarrinho button:hover {
+      color: #0056b3;
+    }
+    .itemCarrinho button.remove {
+      color: #ff4d4d;
+    }
+    .itemCarrinho button.remove:hover {
+      color: #cc0000;
+    }
+    #totalCarrinho {
+      font-weight: bold;
+      font-size: 18px;
+      text-align: right;
+      margin-top: 10px;
+      color: #007bff;
+    }
+    #finalizarPedidoBtn {
+      background: #28a745;
+      color: white;
+      border: none;
+      padding: 12px;
+      width: 100%;
+      font-size: 18px;
+      border-radius: 6px;
+      cursor: pointer;
+      margin-top: 10px;
+      transition: background-color 0.3s;
+    }
+    #finalizarPedidoBtn:hover {
+      background: #1e7e34;
+    }
+    @media (max-width: 900px) {
+      .produtos {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      #painelCarrinho {
+        width: 90vw;
+        right: 5vw;
+      }
+    }
+    @media (max-width: 600px) {
+      .produtos {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<header role="banner">
+  <h1>AtomicStore</h1>
+  <nav role="navigation" aria-label="Menu principal">
+    <a href="index.html">Home</a>
+    <a href="produtos.html" aria-current="page">Produtos</a>
+    <a href="sobre.html">Sobre Nós</a>
+    <a href="contato.html">Contato</a>
+  </nav>
+</header>
+
+<main class="container" role="main">
+  <h2>Produtos</h2>
+  <section class="produtos">
+    
+    <!-- Produto 1 ao 9 (mantido 100% como original) -->
+    <article class="produto">
+      <img src="imagens/tenis1.png" alt="Tênis Nike Zoom GP Challenge Pro Masculino">
+      <h3>Nike Zoom GP Challenge Pro Masculino</h3>
+      <p>R$ 854,99</p>
+      <div class="botoes-produto">
+        <button class="btn-comprar">Comprar</button>
+        <button class="btn-adicionar">Adicionar ao Carrinho</button>
+      </div>
+    </article>
+
+    <article class="produto">
+      <img src="imagens/tenis2.png" alt="Tênis Nike Court Lite 4 Masculino">
+      <h3>Nike Court Lite 4 Masculino</h3>
+      <p>R$ 398,99</p>
+      <div class="botoes-produto">
+        <button class="btn-comprar">Comprar</button>
+        <button class="btn-adicionar">Adicionar ao Carrinho</button>
+      </div>
+    </article>
+
+    <article class="produto">
+      <img src="imagens/tenis3.png" alt="Tênis Nike Gamma Force Feminino">
+      <h3>Nike Gamma Force Feminino</h3>
+      <p>R$ 474,99</p>
+      <div class="botoes-produto">
+        <button class="btn-comprar">Comprar</button>
+        <button class="btn-adicionar">Adicionar ao Carrinho</button>
+      </div>
+    </article>
+
+    <article class="produto">
+      <img src="imagens/tenis4.png" alt="Tênis Nike Air Max SC Feminino">
+      <h3>Nike Air Max SC Feminino</h3>
+      <p>R$ 389,49</p>
+      <div class="botoes-produto">
+        <button class="btn-comprar">Comprar</button>
+        <button class="btn-adicionar">Adicionar ao Carrinho</button>
+      </div>
+    </article>
+
+    <article class="produto">
+      <img src="imagens/tenis5.png" alt="Tênis Nike Dunk Low Panda Feminino">
+      <h3>Nike Dunk Low Panda Feminino</h3>
+      <p>R$ 854,99</p>
+      <div class="botoes-produto">
+        <button class="btn-comprar">Comprar</button>
+        <button class="btn-adicionar">Adicionar ao Carrinho</button>
+      </div>
+    </article>
+
+    <article class="produto">
+      <img src="imagens/tenis6.png" alt="Tênis Nike Revolution 7 Feminino">
+      <h3>Nike Revolution 7 Feminino</h3>
+      <p>R$ 309,99</p>
+      <div class="botoes-produto">
+        <button class="btn-comprar">Comprar</button>
+        <button class="btn-adicionar">Adicionar ao Carrinho</button>
+      </div>
+    </article>
+
+    <article class="produto">
+      <img src="imagens/tenis7.png" alt="Tênis Nike Air Max Excee Masculino">
+      <h3>Nike Air Max Excee Masculino</h3>
+      <p>R$ 626,99</p>
+      <div class="botoes-produto">
+        <button class="btn-comprar">Comprar</button>
+        <button class="btn-adicionar">Adicionar ao Carrinho</button>
+      </div>
+    </article>
+
+    <article class="produto">
+      <img src="imagens/tenis8.png" alt="Tênis Nike Downshifter 13 Feminino">
+      <h3>Nike Downshifter 13 Feminino</h3>
+      <p>R$ 379,04</p>
+      <div class="botoes-produto">
+        <button class="btn-comprar">Comprar</button>
+        <button class="btn-adicionar">Adicionar ao Carrinho</button>
+      </div>
+    </article>
+
+    <article class="produto">
+      <img src="imagens/tenis9.png" alt="Tênis Nike Court Legacy Masculino">
+      <h3>Nike Court Legacy Masculino</h3>
+      <p>R$ 284,99</p>
+      <div class="botoes-produto">
+        <button class="btn-comprar">Comprar</button>
+        <button class="btn-adicionar">Adicionar ao Carrinho</button>
+      </div>
+    </article>
+
+  </section>
+</main>
+
+<!-- Botão do carrinho e painel -->
+<button id="botaoCarrinho" title="Abrir carrinho" aria-label="Abrir carrinho">
+  🛒<span id="contadorCarrinho">0</span>
+</button>
+
+<div id="painelCarrinho" role="region" aria-live="polite" aria-label="Itens do carrinho">
+  <h3>Seu Carrinho</h3>
+  <div id="itensCarrinho"></div>
+  <div id="totalCarrinho">Total: R$ 0,00</div>
+  <button id="finalizarPedidoBtn" aria-label="Finalizar pedido e enviar pelo WhatsApp">Finalizar Pedido</button>
+</div>
+
+<script>
+  const produtos = [
+    {
+      nome: "Nike Zoom GP Challenge Pro Masculino",
+      preco: 854.99,
+      img: "imagens/tenis1.png"
+    },
+    {
+      nome: "Nike Court Lite 4 Masculino",
+      preco: 398.99,
+      img: "imagens/tenis2.png"
+    },
+    {
+      nome: "Nike Gamma Force Feminino",
+      preco: 474.99,
+      img: "imagens/tenis3.png"
+    },
+    {
+      nome: "Nike Air Max SC Feminino",
+      preco: 389.49,
+      img: "imagens/tenis4.png"
+    },
+    {
+      nome: "Nike Dunk Low Panda Feminino",
+      preco: 854.99,
+      img: "imagens/tenis5.png"
+    },
+    {
+      nome: "Nike Revolution 7 Feminino",
+      preco: 309.99,
+      img: "imagens/tenis6.png"
+    },
+    {
+      nome: "Nike Air Max Excee Masculino",
+      preco: 626.99,
+      img: "imagens/tenis7.png"
+    },
+    {
+      nome: "Nike Downshifter 13 Feminino",
+      preco: 379.04,
+      img: "imagens/tenis8.png"
+    },
+    {
+      nome: "Nike Court Legacy Masculino",
+      preco: 284.99,
+      img: "imagens/tenis9.png"
+    }
+  ];
+
+  let carrinho = {};
+
+  const botaoCarrinho = document.getElementById('botaoCarrinho');
+  const contadorCarrinho = document.getElementById('contadorCarrinho');
+  const painelCarrinho = document.getElementById('painelCarrinho');
+  const itensCarrinho = document.getElementById('itensCarrinho');
+  const totalCarrinho = document.getElementById('totalCarrinho');
+  const finalizarPedidoBtn = document.getElementById('finalizarPedidoBtn');
+
+  // Atualiza o contador do carrinho
+  function atualizarContador() {
+    const totalItens = Object.values(carrinho).reduce((acc, item) => acc + item.quantidade, 0);
+    if (totalItens > 0) {
+      contadorCarrinho.style.display = 'inline-block';
+      contadorCarrinho.textContent = totalItens;
+    } else {
+      contadorCarrinho.style.display = 'none';
+    }
+  }
+
+  // Atualiza o painel do carrinho com os itens
+  function atualizarPainel() {
+    itensCarrinho.innerHTML = '';
+
+    for (const key in carrinho) {
+      const item = carrinho[key];
+
+      const itemDiv = document.createElement('div');
+      itemDiv.className = 'itemCarrinho';
+
+      const nomeSpan = document.createElement('span');
+      nomeSpan.textContent = `${item.nome} (R$ ${item.preco.toFixed(2).replace('.', ',')})`;
+
+      const quantidadeDiv = document.createElement('div');
+
+      const btnDiminuir = document.createElement('button');
+      btnDiminuir.textContent = '−';
+      btnDiminuir.title = 'Diminuir quantidade';
+      btnDiminuir.setAttribute('aria-label', `Diminuir quantidade de ${item.nome}`);
+      btnDiminuir.addEventListener('click', () => {
+        if (item.quantidade > 1) {
+          item.quantidade--;
+        } else {
+          delete carrinho[key];
+        }
+        atualizarContador();
+        atualizarPainel();
+      });
+
+      const qtdSpan = document.createElement('span');
+      qtdSpan.textContent = item.quantidade;
+      qtdSpan.style.margin = '0 5px';
+
+      const btnAumentar = document.createElement('button');
+      btnAumentar.textContent = '+';
+      btnAumentar.title = 'Aumentar quantidade';
+      btnAumentar.setAttribute('aria-label', `Aumentar quantidade de ${item.nome}`);
+      btnAumentar.addEventListener('click', () => {
+        item.quantidade++;
+        atualizarContador();
+        atualizarPainel();
+      });
+
+      const btnRemover = document.createElement('button');
+      btnRemover.textContent = '×';
+      btnRemover.className = 'remove';
+      btnRemover.title = 'Remover item';
+      btnRemover.setAttribute('aria-label', `Remover ${item.nome} do carrinho`);
+      btnRemover.addEventListener('click', () => {
+        delete carrinho[key];
+        atualizarContador();
+        atualizarPainel();
+      });
+
+      quantidadeDiv.appendChild(btnDiminuir);
+      quantidadeDiv.appendChild(qtdSpan);
+      quantidadeDiv.appendChild(btnAumentar);
+      quantidadeDiv.appendChild(btnRemover);
+
+      itemDiv.appendChild(nomeSpan);
+      itemDiv.appendChild(quantidadeDiv);
+
+      itensCarrinho.appendChild(itemDiv);
+    }
+
+    const total = Object.values(carrinho).reduce((acc, item) => acc + item.preco * item.quantidade, 0);
+    totalCarrinho.textContent = `Total: R$ ${total.toFixed(2).replace('.', ',')}`;
+  }
+
+  // Adiciona produto ao carrinho
+  function adicionarAoCarrinho(index) {
+    const produto = produtos[index];
+    if (carrinho[produto.nome]) {
+      carrinho[produto.nome].quantidade++;
+    } else {
+      carrinho[produto.nome] = { ...produto, quantidade: 1 };
+    }
+    atualizarContador();
+    atualizarPainel();
+  }
+
+  // Envia a mensagem do carrinho para o WhatsApp
+  function enviarWhatsApp() {
+    if (Object.keys(carrinho).length === 0) {
+      alert('Seu carrinho está vazio!');
+      return;
+    }
+
+    let mensagem = 'Olá! Gostaria de fazer o pedido:\n\n';
+    for (const key in carrinho) {
+      const item = carrinho[key];
+      mensagem += `- ${item.nome} (R$ ${item.preco.toFixed(2).replace('.', ',')}) x ${item.quantidade}\n`;
+    }
+    const total = Object.values(carrinho).reduce((acc, item) => acc + item.preco * item.quantidade, 0);
+    mensagem += `\nTotal: R$ ${total.toFixed(2).replace('.', ',')}`;
+
+    const numeroWhatsapp = '5551998933672'; // Seu número no formato internacional sem "+" e sem espaços
+    const url = `https://wa.me/${numeroWhatsapp}?text=${encodeURIComponent(mensagem)}`;
+    window.open(url, '_blank');
+  }
+
+  // Enviar direto pelo botão comprar (item individual)
+  function comprarDireto(index) {
+    const produto = produtos[index];
+    const mensagem = `Olá! Quero comprar o produto:\n- ${produto.nome} (R$ ${produto.preco.toFixed(2).replace('.', ',')})`;
+    const numeroWhatsapp = '5551998933672';
+    const url = `https://wa.me/${numeroWhatsapp}?text=${encodeURIComponent(mensagem)}`;
+    window.open(url, '_blank');
+  }
+
+  // Adicionar listeners aos botões dos produtos
+  const botoesComprar = document.querySelectorAll('.btn-comprar');
+  botoesComprar.forEach((botao, idx) => {
+    botao.addEventListener('click', () => comprarDireto(idx));
+  });
+
+  const botoesAdicionar = document.querySelectorAll('.btn-adicionar');
+  botoesAdicionar.forEach((botao, idx) => {
+    botao.addEventListener('click', () => {
+      adicionarAoCarrinho(idx);
+      // Abrir painel automaticamente quando adicionar
+      painelCarrinho.style.display = 'block';
+    });
+  });
+
+  // Botão do carrinho
+  botaoCarrinho.addEventListener('click', () => {
+    if (painelCarrinho.style.display === 'block') {
+      painelCarrinho.style.display = 'none';
+    } else {
+      painelCarrinho.style.display = 'block';
+    }
+  });
+
+  // Botão finalizar pedido
+  finalizarPedidoBtn.addEventListener('click', enviarWhatsApp);
+
+  // Inicializa contador
+  atualizarContador();
+</script>
+
+</body>
+</html>
